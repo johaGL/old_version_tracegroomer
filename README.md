@@ -24,7 +24,7 @@ Three types of Tracer data are accepted by our `convert` module:
 
 Your data is expected to correspond to one of the three types above. We provide you 'toy' examples of each one of them  [here](examples/readme_examples.md). Pick the example most suited to your data.
 
-For example, let's take [toy3 example](examples/toy3/) , which contains:
+For example, let's take [toy2 example](examples/toy2/) , which contains:
 
  - 'data/' folder, with:
     * the tracer metabolomics data as one .xlsx file. 
@@ -42,9 +42,9 @@ Regarding the .yml file, we supply examples that you can use as template, such  
 
 ### Execute `convert` 
 
-The examples serve to demonstrate how fast this module can be. Take toy3 example, copy and paste the entire toy3 folder in your 'home/' folder, then from terminal:
+The examples serve to demonstrate how fast this module can be. Take toy2 example, copy and paste the entire toy2 folder in your 'home/' folder, then from terminal:
 ```
-python -m t4DIMet.convert toy3/analysis01/config-3-01.yml
+python -m t4DIMet.convert toy2/analysis01/config-3-01.yml
 ```
 
 --------------------
@@ -66,17 +66,6 @@ You can:
 
 However we have some indications that can slightly differ for [users having VIB results as input](#users-having-vib-results), [users having IsoCor results](#users-having-isocor-results) or users having ['generic' type of data](#users-having-generic-data).
 
-### Users having VIB results
-
-As shown in the example 'toy2' [here](examples/toy2/), give the names of the sheets that are present in your excel file coherently. 
- 
-Our pipeline performs, by default:
-- the subtraction of the means of the blanks across all metabolites' abundance for each sample.
-- seting to NaN the values of abundance that are under the limit of detection (LOD).
-- excluding metabolites whose abundance values across all samples are under LOD (excluded then from all tables by default).
-- stomping fractions values to be comprised between 0 and 1 (some negative and some superior to 1 values can occur after )
-
-You can modify all those options depending on your needs, they appear as 'optional arguments' in the help menu. 
 
  
 ### Users having IsoCor results
@@ -98,6 +87,20 @@ Options regarding to detection limit (LOD) and blanks will not have any effect o
 
 All the other options do have effect: those related to internal standard, amount of material, and isotopologues.
  
+ 
+ 
+### Users having VIB results
+
+As shown in the example 'toy2' [here](examples/toy2/), give the names of the sheets that are present in your excel file coherently. 
+ 
+Our pipeline performs, by default:
+- the subtraction of the means of the blanks across all metabolites' abundance for each sample.
+- seting to NaN the values of abundance that are under the limit of detection (LOD).
+- excluding metabolites whose abundance values across all samples are under LOD (excluded then from all tables by default).
+- stomping fractions values to be comprised between 0 and 1 (some negative and some superior to 1 values can occur after )
+
+You can modify all those options depending on your needs, they appear as 'optional arguments' in the help menu. 
+
 
 ### Users having generic data
 
@@ -114,7 +117,7 @@ As in example [toy3](examples/toy3) if you only have isotopologue Absolute value
 
 Here the first lines of the required metadata table, which must be a .csv (comma delimited) file : 
 
-| sample            | timepoint | condition | timenum | short_comp  |  former_name |
+| name_to_plot   | timepoint | condition | timenum | short_comp  |  original_name |
 |-------------------|-----------|-----------|-------|------------|--------------- |
 | Control\_cell\_T0-1 | T0        | Control   | 0     | cell       | MCF001089_TD01 |
 | Control\_cell\_T0-2 | T0        | Control   | 0     | cell       | MCF001089_TD02 |
@@ -123,18 +126,18 @@ Here the first lines of the required metadata table, which must be a .csv (comma
 You can create it with any spreadsheet program such as Excel or Google Sheets or LibreOfice Calc. At the moment of saving your file you specify that the delimiter must be a comma, see https://support.microsoft.com/en-us/office/save-a-workbook-to-text-format-txt-or-csv-3e9a9d6c-70da-4255-aa28-fcacf1f081e6. 
 
 Column names in metadata must be exactly: 
- - former\_name
- - sample
+ - original\_name
+ - name_to_plot
  - timepoint
  - timenum
  - condition
  - short\_comp
 
  
-The column 'former\_name' must have the names of the samples **as given in your data**. 
+The column 'original\_name' must have the names of the samples **as given in your data**. 
   
  
- The column 'sample' must have the names as you want them to be (or set identical to former\_name if you prefer). To set  names that are meaningful is a better choice, as we will take them for all the results.
+ The column 'name_to_plot' must have the names as you want them to be (or set identical to original\_name if you prefer). To set  names that are meaningful is a better choice, as we will take them for all the results.
  
  
  The column 'timenum' must contain only the numberic part of the timepoint, for example 2,0, 10, 100  (this means, without letters ("T", "t", "s", "h" etc) nor any other symbol). Make sure these time numbers are in the same units (but do not write  the units here!).
