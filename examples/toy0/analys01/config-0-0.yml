@@ -1,0 +1,71 @@
+# This is toy0 configuration file example
+# Note: for indentation use space (never tab!), 2-space indents
+# coments start with #
+
+# -----------------------------
+# necesary to all steps
+# -----------------------------
+
+metadata_path : ~/toy0/data/meta_dsta-l_m50-overlap42-a10-b10_0.001-0.985.csv
+targetedMetabo_path: ~/toy0/data/data_dsta-l_m50-overlap42-a10-b10_0.001-0.985.xlsx
+amountMaterial_path : null # null or the file name, if available, in data/
+typeprep : generic_prep
+
+# when generic,  names of the sheets in xlsx file that exist (null otherwise) !!!!!
+name_abundance : null
+name_meanE_or_fracContrib : simulfractions
+name_isotopologue_prop : null # isotopologue proportions
+name_isotopologue_abs : isotopologues  # isotopologue absolute values (for toy0 not avail)
+
+conditions : [a, b] # first must be control
+suffix : toy0
+out_path : ~/toy0/analys01/
+
+
+# -----------------------------
+# Plots
+# -----------------------------
+metabolites_to_plot:
+  in: [var_39, var_50, var_18, var_10, var_5, var_1]
+
+# Abundances
+# -----------------------------
+time_sel: 
+  - 0
+
+barcolor: timepoint
+axisx : condition
+axisx_labeltilt : 0 # 0 is no tilt
+width_each_subfig : 3
+wspace_subfigs : 1
+
+
+# -----------------------------
+# differential analysis
+# -----------------------------
+grouping:  # see explanation at the  end
+  - condition
+
+comparisons: 
+  - [b, a]     
+  - [a, b]         
+              
+statistical_test:
+  abundances: prm-scipy  
+  meanE_or_fracContrib: KW
+  isotopologue_abs: KW
+  isotopologue_prop: null
+     
+thresholds:
+  padj: 0.001
+  absolute_log2FC: 1
+
+
+# grouping: column that is a combination of 2 metadata categories,
+# new category thus generated, is ready for comparison. Example :
+#  Control (a condition) combined with T0 (a timepoint), yields Control_T0
+#  L-Cyclo (another condition) combined with T0 (same timepoint) yields L-Cyclo_T0
+#  thus now, we are able to compare L-Cyclo_T0 against Control_T0 .
+
+# -------------------- end of config file ---------------------         
+# NOTE: Metabolograms need a separated configuration file

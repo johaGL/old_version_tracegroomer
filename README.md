@@ -17,6 +17,8 @@ Its execution takes only few seconds! Below we explain how to proceed.
 
 ### Input files
 
+
+
 Three types of Tracer data are accepted by our `convert` module:
 1. IsoCor results (.xlsx measurments file).
 2. Results provided by the VIB Metabolomics Expertise Center (El-Maven results are shaped by VIB MEC team into a multi-sheet .xlsx file).  
@@ -39,6 +41,8 @@ Regarding the **metadata**, we explain it in detail in the section [Metadata](#t
 
 Regarding the .yml file, we supply examples that you can use as template, such  [this config.yml template](examples/toy1/analysis001/config-1-001.yml). To double-check your modifications there exist online editors, such as https://yamlchecker.com/, just copy-paste and edit!
 
+Note that this pipeline does not correct for naturally ocurring isotopologues. Your data must be already processed by another software that performs such correction.
+
 
 ### Execute `convert` 
 
@@ -47,8 +51,14 @@ The examples serve to demonstrate how fast this module can be. Take toy2 example
 python -m t4DIMet.convert toy2/analysis01/config-3-01.yml
 ```
 
+## The output
+
+The four output tables (three if absolute isotopologues are not provided) are saved in  the same folder of the metadata file that you specified.
+
+Their format is .csv, and each file has its columns delimited by tabulations.
+
 --------------------
-# Details
+## Details about convert
 
 ### Advanced prepare options
 
@@ -72,11 +82,12 @@ However we have some indications that can slightly differ for [users having VIB 
 
 A typical IsoCor results table is described in: https://isocor.readthedocs.io/en/latest/tutorials.html#output-files
  
- Our pipeline transforms its columns into tables, so here the 'Isocor column : DIMet table' correspondence:
-    - corrected_area : isotopologuesAbsolute  
-    - isotopologue_fraction : isotopologuesProportions
-    - mean\_enrichment :  meanEnrich\_or_fracContrib
-    - (nothing)   : Abundance 
+ Our pipeline transforms its columns into tables, so here the 'Isocor column : DIMet table' correspondences:
+ 
+- corrected_area : isotopologuesAbsolute  
+- isotopologue_fraction : isotopologuesProportions
+- mean\_enrichment :  meanEnrich\_or_fracContrib
+- (nothing)   : Abundance 
 
 Abundance table is the sum (per metabolite) of IsotopologuesAbsolute, we also perform it automatically, as this column is not present in the input data.     
     
@@ -97,7 +108,7 @@ Our pipeline performs, by default:
 - the subtraction of the means of the blanks across all metabolites' abundance for each sample.
 - seting to NaN the values of abundance that are under the limit of detection (LOD).
 - excluding metabolites whose abundance values across all samples are under LOD (excluded then from all tables by default).
-- stomping fractions values to be comprised between 0 and 1 (some negative and some superior to 1 values can occur after )
+- stomping fractions values to be comprised between 0 and 1 (some negative and some superior to 1 values can occur after correction of naturally occurring isotopologues when using software dedicated to such corrections)
 
 You can modify all those options depending on your needs, they appear as 'optional arguments' in the help menu. 
 
@@ -137,7 +148,7 @@ Column names in metadata must be exactly:
 The column 'original\_name' must have the names of the samples **as given in your data**. 
   
  
- The column 'name_to_plot' must have the names as you want them to be (or set identical to original\_name if you prefer). To set  names that are meaningful is a better choice, as we will take them for all the results.
+ The column 'name\_to\_plot' must have the names as you want them to be (or set identical to original\_name if you prefer). To set  names that are meaningful is a better choice, as we will take them for all the results.
  
  
  The column 'timenum' must contain only the numberic part of the timepoint, for example 2,0, 10, 100  (this means, without letters ("T", "t", "s", "h" etc) nor any other symbol). Make sure these time numbers are in the same units (but do not write  the units here!).
