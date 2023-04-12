@@ -106,7 +106,7 @@ they appear as 'optional arguments' in the help menu.
 
 You can:
 
-- normalize by the amount of material (number of cells, tissue weight): setting the path to the file in your **.yml** configuration. The file must be like [this csv file](groomexamples/toyp2/nbcells-or-amountOfMaterial.csv), and the first column must contain the same names as in metadata 'former\_name'.
+- normalize by the amount of material (number of cells, tissue weight): setting the path to the file in `--amountMaterial_path` option. The file must be like [this csv file](groomexamples/toyp2/nbcells-or-amountOfMaterial.csv), and the first column must contain the same names as in metadata 'original\_name'.
 - normalize by an internal standard (present in your data) at choice: using the advanced option `--use_internal_standard`.
 
 However we have some indications that can slightly differ for [users having VIB results as input](#users-having-vib-results), [users having IsoCor results](#users-having-isocor-results) or users having ['generic' type of data](#users-having-generic-data).
