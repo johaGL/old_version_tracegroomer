@@ -50,7 +50,7 @@ It depends on the platform/software used before us.
 Regarding the **metadata**, we explain it in detail in the section [Metadata](#the-metadata).
 
 
-Regarding the .yml file, you can use as template the ones we provide in the groomexamples, such  [this config.yml template](groomexamples/toyp1/config-1-001.yml). To double-check your modifications there exist online editors, such as https://yamlchecker.com/, just copy-paste and edit!
+Regarding the .yml file, you can use as template the ones we provide in the groomexamples, such  [this config.yml template](groomexamples/toyp1/config-1-groom.yml). To double-check your modifications there exist online editors, such as https://yamlchecker.com/, just copy-paste and edit!
 
 Note that this pipeline does not correct for naturally ocurring isotopologues. Your data must be already processed by another software that performs such correction.
 
@@ -94,7 +94,7 @@ they appear as 'optional arguments' in the help menu.
 
 You can:
 
-- normalize by the amount of material (number of cells, tissue weight): setting the path to the file in your **.yml** configuration. The file must be like [this csv file](groomexamples/toyp2/data/nbcells-or-amountOfMaterial.csv), and the first column must contain the same names as in metadata 'former\_name'.
+- normalize by the amount of material (number of cells, tissue weight): setting the path to the file in your **.yml** configuration. The file must be like [this csv file](groomexamples/toyp2/nbcells-or-amountOfMaterial.csv), and the first column must contain the same names as in metadata 'former\_name'.
 - normalize by an internal standard (present in your data) at choice: using the advanced option `--use_internal_standard`.
 
 However we have some indications that can slightly differ for [users having VIB results as input](#users-having-vib-results), [users having IsoCor results](#users-having-isocor-results) or users having ['generic' type of data](#users-having-generic-data).
