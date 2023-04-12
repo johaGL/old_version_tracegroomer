@@ -44,7 +44,7 @@ Each of these example folders contains:
    * a file with metabolites to exclude (csv file)
     
     
-For example, in [toyp2 example](groomexamples/toyp2/), the tracer metabolome file is a xlsx file.     
+For example, in [toyp2](groomexamples/toyp2/), the tracer metabolome file is a xlsx file.     
 It depends on the platform/software used before us.
 
 Regarding the **metadata**, we explain it in detail in the section [Metadata](#the-metadata).
@@ -60,13 +60,25 @@ Note that this pipeline does not correct for naturally ocurring isotopologues. Y
 The groomexamples serve also to demonstrate how fast this module can be. To run all the examples at once, copy-paste the 'groomexamples' folder in your $HOME, then run:
 
 ```
-python3 -m Tracegroomer.tidy --targetedMetabo_path ~/groomexamples/toyp1/TRACER_IsoCor_out_example.tsv --type_of_file IsoCor_out_tsv ~/groomexamples/toyp1/config-1-groom.yml
+cd $HOME
+
+python3 -m Tracegroomer.tidy \
+   --targetedMetabo_path groomexamples/toyp1/TRACER_IsoCor_out_example.tsv \
+   --type_of_file IsoCor_out_tsv \
+   groomexamples/toyp1/config-1-groom.yml
 
 
-python3 -m Tracegroomer.tidy --targetedMetabo_path ~/groomexamples/toyp2/TRACER_metabo_toy2.xlsx --type_of_file VIBMEC_xlsx --amountMaterial_path ~/groomexamples/toyp2/nbcells-or-amountOfMaterial.csv ~/groomexamples/toyp2/config-2-groom.yml
+python3 -m Tracegroomer.tidy \
+   --targetedMetabo_path groomexamples/toyp2/TRACER_metabo_toy2.xlsx \
+   --type_of_file VIBMEC_xlsx \
+   --amountMaterial_path groomexamples/toyp2/nbcells-or-amountOfMaterial.csv \
+   groomexamples/toyp2/config-2-groom.yml
 
 
-python3 -m Tracegroomer.tidy --targetedMetabo_path ~/groomexamples/toyp3/TRACER_generic_toy3.xlsx --type_of_file generic_xlsx ~/groomexamples/toyp3/config-3-groom.yml
+python3 -m Tracegroomer.tidy \
+   --targetedMetabo_path groomexamples/toyp3/TRACER_generic_toy3.xlsx \
+   --type_of_file generic_xlsx \
+   groomexamples/toyp3/config-3-groom.yml
 ```
 
 
@@ -125,7 +137,7 @@ All the other options do have effect: those related to internal standard, amount
  
 ### Users having VIB results
 
-As shown in the example 'toyp2' [here](groomexamples/toyp2/), give the names of the sheets that are present in your excel file coherently. 
+As shown in the example [toyp2](groomexamples/toyp2/), give the names of the sheets that are present in your excel file coherently. 
  
 Our pipeline performs, by default:
 - the subtraction of the means of the blanks across all metabolites' abundance for each sample.
@@ -142,7 +154,7 @@ We have created this option for those formats that are not the other two scenari
 - sheets corresponding to isotopologue Proportions (when available) and isotopologue Absolute values must have isotopologues as columns and samples as rows.
 - sheets corresponding to abundance and mean enrichment  must have metabolites as columns and samples as rows.
 
-As in example [toy3](groomexamples/toy3) if you only have isotopologue Absolute values, but not the other tables: put them as a single named sheet in your .xlsx file, and we automatically generate all the other types of tables for you ! 
+As in example [toyp3](groomexamples/toyp3) if you only have isotopologue Absolute values, but not the other tables: put them as a single named sheet in your .xlsx file, and we automatically generate all the other types of tables for you ! 
 
 
 
