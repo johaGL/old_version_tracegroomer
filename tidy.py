@@ -22,6 +22,16 @@ def prep_args():
     parser.add_argument('config', type=str,
                         help="Configuration file in absolute path")
 
+    parser.add_argument('--targetedMetabo_path', type=str, default=None,
+                        help="the absolute path to your file")
+
+    parser.add_argument('--type_of_file', type=str, default=None,
+                        help="IsoCor_out_tsv|VIBMEC_xlsx|generic_xlsx")
+
+    parser.add_argument('--amountMaterial_path', type=str, default=None,
+                        help="absolute path to the file .csv having the amount \
+                        of material (number of cells, tissue weight, etc) by sample")
+
     # for abundance
     parser.add_argument("--under_detection_limit_set_nan",
                         action=argparse.BooleanOptionalAction,
@@ -291,6 +301,49 @@ def abund_divideby_amount_material(frames_dic: dict, confidic: dict,
                                                      axis=0)
 
                 frames_dic[confidic['name_abundance']][compartment] = tmp
+
+        except FileNotFoundError as err_file:
+            print(err_file)
+        except UnboundLocalError as uerr:
+            print(uerr, "config amountMaterial_path:  check spelling")
+        except Exception as e:
+            print(e)
+
+    return frames_dic
+
+
+def isosAbsol_divideby_amount_material(frames_dic: dict, confidic: dict,
+                                   amount_material: str,
+                                   alternative_method: bool):
+    if amount_material is not None:
+        try:
+            file = amount_material
+            material_df = pd.read_csv(file, index_col=0)
+
+            assert material_df.shape[1] == 1,\
+                "amountMaterial table must have only 2 columns"
+
+            assert (material_df.iloc[:, 0] <= 0).sum() == 0, "amountMaterial table\
+                 must not contain zeros nor negative numbers"
+
+            abund_dic = frames_dic[confidic['name_isotopologue_abs']].copy()
+            for compartment in abund_dic.keys():
+                material_df_s = material_df.loc[
+                                list(abund_dic[compartment].index), :]
+                if alternative_method:
+                    material_avg = material_df_s.iloc[:, 0].mean()
+                    material_avg_ser = pd.Series([float(material_avg) for i in
+                                                  range(material_df_s.shape[
+                                                            0])],
+                                                 index=material_df_s.index)
+                    tmp = abund_dic[compartment].div(material_df_s.iloc[:, 0],
+                                                     axis=0)
+                    tmp = tmp.mul(material_avg_ser, axis=0)
+                else:
+                    tmp = abund_dic[compartment].div(material_df_s.iloc[:, 0],
+                                                     axis=0)
+
+                frames_dic[confidic['name_isotopologue_abs']][compartment] = tmp
 
         except FileNotFoundError as err_file:
             print(err_file)
@@ -634,7 +687,7 @@ def do_isocorOutput_prep(meta_path, targetedMetabo_path, args, confidic,
 
         return frames_dic, instandard_abun_df
 
-    isocor_output_df = pd.read_excel(targetedMetabo_path)
+    isocor_output_df = pd.read_csv(targetedMetabo_path, sep="\t")
     metadata = fg.open_metadata(meta_path)
     fg.verify_metadata_sample_not_duplicated(metadata)
     frames_dic, instandard_abun_df = isocor_2_frames_dic(
@@ -649,6 +702,12 @@ def do_isocorOutput_prep(meta_path, targetedMetabo_path, args, confidic,
         frames_dic, confidic,
         amount_mater_path,
         args.alternative_div_amount_material)
+
+    # # TODO : think divide or not divide absolute isotopologues
+    # frames_dic = isosAbsol_divideby_amount_material(
+    #     frames_dic, confidic,
+    #     amount_mater_path,
+    #     args.alternative_div_amount_material)
 
     save_isos_preview(frames_dic[confidic['name_isotopologue_prop']],
                       metadata,
@@ -706,6 +765,12 @@ def do_generic_prep(meta_path, targetedMetabo_path, args, confidic,
         amount_mater_path,
         args.alternative_div_amount_material)
 
+    # # TODO : think divide or not divide absolute isotopologues
+    # frames_dic = isosAbsol_divideby_amount_material(
+    #     frames_dic, confidic,
+    #     amount_mater_path,
+    #     args.alternative_div_amount_material)
+
     save_isos_preview(frames_dic[confidic_new['name_isotopologue_prop']],
                       metadata,
                       output_plots_dir, args.isotopologues_preview)
@@ -714,22 +779,22 @@ def do_generic_prep(meta_path, targetedMetabo_path, args, confidic,
 
 
 def drop_metabolites_infile(frames_dic, exclude_list_file: [str, None]):
+    print("removing metabolites as specified by user in file:")
+    print(exclude_list_file, "\n")
     if exclude_list_file is not None:
+        exclude_df = pd.read_csv(exclude_list_file, sep="\t", header=0)
         try:
-            file = exclude_list_file
-            exclude_df = pd.read_csv(file, header=0)
             unwanted_metabolites = dict()
             for co in exclude_df["short_comp"].unique():
                 mets_l = exclude_df.loc[
                     exclude_df["short_comp"] == co, 'metabolite'].tolist()
                 unwanted_metabolites[co] = mets_l
-
             frames_dic = drop__metabolites_by_compart(frames_dic,
                                                       unwanted_metabolites)
         except FileNotFoundError as err_file:
-            print(err_file)
+            print(err_file, "ooo")
         except Exception as e:
-            print(e)
+            print(e, "iii")
     return frames_dic
 
 
@@ -803,26 +868,21 @@ def transfer__abund_nan__to_all_tables(confidic, frames_dic):
 
 def perform_type_prep(args, confidic, meta_path, targetedMetabo_path,
                       amount_mater_path, out_path) -> None:
-    output_dir = out_path + "results/"
-    fg.detect_and_create_dir(output_dir)
-
-    output_plots_dir = out_path + "results/plots/preview/"
+    elems_t_dir = targetedMetabo_path.split("/")[:-1]
+    output_plots_dir = "/".join(elems_t_dir) + "/" + "preview_plots/"
     fg.detect_and_create_dir(output_plots_dir)
 
-    elems_data_dir = meta_path.split("/")[:-1]
-    oo = "/".join(elems_data_dir)
-    output_tabs_dir = oo + "/"
-    fg.detect_and_create_dir(output_tabs_dir)
+    fg.detect_and_create_dir(out_path)
 
-    if confidic['typeprep'] == 'IsoCor_output_prep':
+    if args.type_of_file == 'IsoCor_out_tsv':
         frames_dic = do_isocorOutput_prep(meta_path, targetedMetabo_path,
                                           args, confidic,
                                           amount_mater_path, output_plots_dir)
-    elif confidic['typeprep'] == 'VIBMEC_output_prep':
+    elif args.type_of_file == 'VIBMEC_xlsx':
         frames_dic = do_vib_prep(meta_path, targetedMetabo_path, args,
                                  confidic,
                                  amount_mater_path, output_plots_dir)
-    elif confidic['typeprep'] == 'generic_prep':
+    elif args.type_of_file == 'generic_xlsx':
         frames_dic, confidic = do_generic_prep(meta_path, targetedMetabo_path,
                                                args, confidic,
                                                amount_mater_path,
@@ -841,20 +901,11 @@ def perform_type_prep(args, confidic, meta_path, targetedMetabo_path,
         args.meanenrich_or_fracfontrib_stomp_values)
     frames_dic = transfer__abund_nan__to_all_tables(confidic, frames_dic)
 
-
     for k in frames_dic.keys():
         tmpli = list()
         for compartment in frames_dic[k].keys():
-            #tmp = frames_dic[k][compartment].T
             tmp = frames_dic[k][compartment].T
-            #tmp.index.name = "metabolite_or_isotopologue"
-            #tmp = tmp.reset_index()
-            #tmp = tmp.drop_duplicates()
-            print(tmp)
             tmpli.append(tmp)
-            #tmp.to_csv(
-            #    f"{output_tabs_dir}{k}--{compartment}--{suffix_str}.tsv",
-            #    sep='\t', header=True, index=False)
 
         finalk = tmpli[0]
         for i in range(1, len(tmpli)):
@@ -865,7 +916,7 @@ def perform_type_prep(args, confidic, meta_path, targetedMetabo_path,
         finalk = finalk.reset_index()
         finalk = finalk.drop_duplicates()
         finalk.to_csv(
-            f"{output_tabs_dir}{k}.tsv",
+            f"{out_path}{k}.tsv",
             sep='\t', header=True, index=False)
 
     if len(os.listdir(output_plots_dir)) == 0:
@@ -875,24 +926,31 @@ def perform_type_prep(args, confidic, meta_path, targetedMetabo_path,
     for s in ['name_abundance', 'name_meanE_or_fracContrib',
               'name_isotopologue_prop', 'name_isotopologue_abs']:
         txt += f"{s},{confidic[s]}\n"
-    with open(f"{output_tabs_dir}TABLESNAMES.csv", "w") as f:
+    with open(f"{out_path}TABLESNAMES.csv", "w") as f:
         f.write(txt)
 
 
 if __name__ == "__main__":
-
     parser = prep_args()
     args = parser.parse_args()
     configfile = os.path.expanduser(args.config)
     confidic = fg.open_config_file(configfile)
-    fg.auto_check_validity_configuration_file(confidic)
+
+    expected_keys_makeready = ['metadata_path',
+                     'name_abundance',
+                     'name_meanE_or_fracContrib',
+                     'name_isotopologue_prop',
+                     'name_isotopologue_abs']
+    for k in expected_keys_makeready:
+        assert k in confidic.keys(), f"{k} : missing in configuration file! "
+
     meta_path = os.path.expanduser(confidic['metadata_path'])
-    targetedMetabo_path = os.path.expanduser(confidic['targetedMetabo_path'])
+    targetedMetabo_path = os.path.expanduser(args.targetedMetabo_path)
     out_path = os.path.expanduser(confidic['out_path'])
-    amount_mater_path = confidic['amountMaterial_path']
-    if confidic['amountMaterial_path'] is not None:
+    amount_mater_path = args.amountMaterial_path
+    if args.amountMaterial_path is not None:
         amount_mater_path = os.path.expanduser(
-            confidic['amountMaterial_path'])
+            args.amountMaterial_path)
 
     perform_type_prep(args, confidic, meta_path, targetedMetabo_path,
                       amount_mater_path, out_path)

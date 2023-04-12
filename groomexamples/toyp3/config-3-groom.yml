@@ -1,0 +1,17 @@
+# -----------------------------
+# This is for grooming
+# Note: for indentation use space (never tab!): 2 space indents
+# coments start with #
+# -----------------------------
+
+metadata_path : ~/groomexamples/toyp3/data/metadata_toy3.csv 
+
+# when generic,  names of the sheets in xlsx file that exist (null otherwise) 
+name_abundance : null
+name_meanE_or_fracContrib : null
+name_isotopologue_prop : null
+name_isotopologue_abs : isotopologuesCorrValues  # isotopologue absolute values
+
+out_path : ~/groomexamples/toyp3/data/
+
+

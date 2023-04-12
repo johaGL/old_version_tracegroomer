@@ -1,0 +1,16 @@
+# -----------------------------
+# This is for grooming
+# Note: for indentation use space (never tab!): 2 space indents
+# coments start with #
+# -----------------------------
+
+metadata_path : ~/groomexamples/toyp2/data/metadata_toy2.csv
+
+name_abundance : rawAbundances
+name_meanE_or_fracContrib : FracContribution_C
+name_isotopologue_prop : CorrectedIsotopologues # isotopologue proportions
+name_isotopologue_abs : null  # isotopologue absolute values (for toy2 not avail)
+
+
+out_path : ~/groomexamples/toyp2/data/
+

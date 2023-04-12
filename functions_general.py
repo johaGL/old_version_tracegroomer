@@ -34,11 +34,11 @@ def open_config_file(confifile):
 
 
 def auto_check_validity_configuration_file(confidic) -> None:
-    expected_keys = ['metadata_path', 'targetedMetabo_path',
-                     'amountMaterial_path',
-                     'typeprep', 'name_abundance',
+    expected_keys = ['metadata_path',
+                     'name_abundance',
                      'name_meanE_or_fracContrib',
-                     'name_isotopologue_prop', 'name_isotopologue_abs',
+                     'name_isotopologue_prop',
+                     'name_isotopologue_abs',
                      'conditions',
                      'suffix', 'out_path']
     for k in expected_keys:
