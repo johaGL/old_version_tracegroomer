@@ -20,7 +20,7 @@ Its execution takes only few seconds! Below we explain how to proceed.
 
 Three types of Tracer data are accepted by our `Tracegroomer.tidy` module:
 
-1. IsoCor results (.xlsx measurments file).
+1. IsoCor results (.tsv measurments file).
 2. Results provided by the VIB Metabolomics Expertise Center (El-Maven results are shaped by VIB MEC team into a multi-sheet .xlsx file).  
 3. A 'generic' .xlsx measurments file.
 
