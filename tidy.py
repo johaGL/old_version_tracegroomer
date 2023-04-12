@@ -182,7 +182,7 @@ def reshape_frames_dic_elems(frames_dic: dict, metadata: pd.DataFrame,
         trans_dic[k] = dict()
         for co in compartments:
             metada_co = metadata.loc[metadata['short_comp'] == co, :]
-            df_co = df.loc[metada_co['former_name'], :]
+            df_co = df.loc[metada_co['original_name'], :]
             trans_dic[k][co] = df_co
 
     frames_dic = trans_dic.copy()
@@ -422,7 +422,7 @@ def save_isos_preview(dic_isos_prop, metadata, output_plots_dir,
         for k in metadata['short_comp'].unique().tolist():
             df = dic_isos_prop[k]
             sples_co = metadata.loc[
-                metadata["short_comp"] == k, "former_name"]
+                metadata["short_comp"] == k, "original_name"]
             df = df.loc[sples_co, :]
             df = df.T  # transpose
             df = df.astype(float)
@@ -459,13 +459,13 @@ def set_samples_names(frames_dic, metadata):
             metada_co = metadata.loc[metadata['short_comp'] == co, :]
             df = frames_dic[tab][co]
             df.reset_index(inplace=True)
-            df.rename(columns={df.columns[0]: "former_name"}, inplace=True)
+            df.rename(columns={df.columns[0]: "original_name"}, inplace=True)
             careful_samples_order = pd.merge(df.iloc[:, 0], metada_co[
-                ['sample', 'former_name']],
-                                             how="left", on="former_name")
-            df = df.assign(sample=careful_samples_order['sample'])
-            df = df.set_index('sample')
-            df = df.drop(columns=['former_name'])
+                ['name_to_plot', 'original_name']],
+                                             how="left", on="original_name")
+            df = df.assign(name_to_plot=careful_samples_order['name_to_plot'])
+            df = df.set_index('name_to_plot')
+            df = df.drop(columns=['original_name'])
             frames_dic[tab][co] = df
 
     return frames_dic
@@ -626,7 +626,7 @@ def df_to__dic_bycomp(df: pd.DataFrame, metadata: pd.DataFrame) -> dict:
     out_dic = dict()
     for co in metadata['short_comp'].unique():
         metada_co = metadata.loc[metadata['short_comp'] == co, :]
-        df_co = df.loc[metada_co['former_name'], :]
+        df_co = df.loc[metada_co['original_name'], :]
         out_dic[co] = df_co
     return out_dic
 
@@ -779,9 +779,9 @@ def do_generic_prep(meta_path, targetedMetabo_path, args, confidic,
 
 
 def drop_metabolites_infile(frames_dic, exclude_list_file: [str, None]):
-    print("removing metabolites as specified by user in file:")
-    print(exclude_list_file, "\n")
     if exclude_list_file is not None:
+        print("removing metabolites as specified by user in file:")
+        print(exclude_list_file, "\n")
         exclude_df = pd.read_csv(exclude_list_file, sep="\t", header=0)
         try:
             unwanted_metabolites = dict()

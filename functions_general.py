@@ -83,7 +83,7 @@ def verify_metadata_sample_not_duplicated(metadata_df) -> None:
                 repeated_elems.append(k)
         return repeated_elems
 
-    sample_duplicated = yield_repeated_elems(list(metadata_df['sample']))
+    sample_duplicated = yield_repeated_elems(list(metadata_df['name_to_plot']))
     if len(sample_duplicated) > 0:
         txt_errors = f"-> duplicated sample names: {sample_duplicated}\n"
         raise ValueError(
@@ -129,11 +129,11 @@ def prepare4contrast(idf, ametadata, grouping, contrast):
         cc = cc.assign(newcol=['' for i in range(cc.shape[0])])
         for i, row in cc.iterrows():
             elems = row[grouping].tolist()
-            cc.at[i, "newcol"] = "_".join(elems)
+            cc.at[i, 'newcol'] = "_".join(elems)
     else:
         cc = cc.assign(newcol=cc[grouping])
-    metas = cc.loc[cc["newcol"].isin(contrast), :]
-    newdf = idf[metas["sample"]]
+    metas = cc.loc[cc['newcol'].isin(contrast), :]
+    newdf = idf[metas['name_to_plot']]
     return newdf, metas
 
 
@@ -142,12 +142,12 @@ def splitrowbynewcol(row, metas):
     Returns : miniD
     example : Control_T24h : [0.0, 0.0, 0.0] , Treated_T24h : [0.0, 0.0, 0.0]
     """
-    newcoluniq = list(set(metas["newcol"]))
+    newcoluniq = list(set(metas['newcol']))
     miniD = dict()
     for t in newcoluniq:
-        # print(metas.loc[metas["newcol"] == t,:])
-        koo = metas.loc[metas["newcol"] == t, :]
-        selsams = koo["sample"]
+        # print(metas.loc[metas['newcol'] == t,:])
+        koo = metas.loc[metas['newcol'] == t, :]
+        selsams = koo['name_to_plot']
         miniD[t] = row[selsams].tolist()
     return miniD
 
@@ -223,7 +223,7 @@ def give_coefvar_new(df_red, red_meta, newcol: str):
     groups_ = red_meta[newcol].unique()
     tmpdico = dict()
     for group in groups_:
-        samplesthisgroup = red_meta.loc[red_meta[newcol] == group, "sample"]
+        samplesthisgroup = red_meta.loc[red_meta[newcol] == group, 'name_to_plot']
         subdf = df_red[samplesthisgroup]
         subdf = subdf.assign(CV=subdf.apply(compute_cv, axis=1))
         tmpdico[f"CV_{group}"] = subdf.CV.tolist()
@@ -248,8 +248,8 @@ def give_geommeans_new(df_red, metad4c, newcol: str, c_interest, c_control):
     output: df, str, str
     """
 
-    sams_interest = metad4c.loc[metad4c[newcol] == c_interest, "sample"]
-    sams_control = metad4c.loc[metad4c[newcol] == c_control, "sample"]
+    sams_interest = metad4c.loc[metad4c[newcol] == c_interest, 'name_to_plot']
+    sams_control = metad4c.loc[metad4c[newcol] == c_control, 'name_to_plot']
     dfout = df_red.copy()
     geomcol_interest = "geommean_" + c_interest
     geomcol_control = "geommean_" + c_control
@@ -287,8 +287,8 @@ def give_ratios_df(df1, geomInterest, geomControl):
 def countnan_samples(df, metad4c):
     vecout = []
     grs = metad4c['newcol'].unique()
-    gr1 = metad4c.loc[metad4c['newcol'] == grs[0], "sample"]
-    gr2 = metad4c.loc[metad4c['newcol'] == grs[1], "sample"]
+    gr1 = metad4c.loc[metad4c['newcol'] == grs[0], 'name_to_plot']
+    gr2 = metad4c.loc[metad4c['newcol'] == grs[1], 'name_to_plot']
 
     for i, row in df.iterrows():
         vec1 = row[gr1].tolist()
