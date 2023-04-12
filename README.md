@@ -87,7 +87,7 @@ python3 -m Tracegroomer.tidy \
 
 The four output tables (three if absolute isotopologues are not provided) are saved in the  folder that  you specified in the config .yml file ("out_path" field). 
 
-The examples we provide here use the `data/` folder (inside each given "toyp*" directory) as the output location. In this way we simply copy the entire `data/` folder to the tracer metabolomics project we want to run with DIMet !.
+The examples we provide here use the `data/` folder (inside each given "toyp*" directory) as the output location. In this way we simply copy the entire `data/` folder to the tracer metabolomics project we want to run with DIMet !
 
 The format of these output files is tab-delimited .csv.
 
