@@ -163,11 +163,11 @@ As in example [toyp3](groomexamples/toyp3) if you only have isotopologue Absolut
 
 Here the first lines of the required metadata table, which must be a .csv (comma delimited) file : 
 
-| name_to_plot   | condition |  timepoint | timenum | short_comp  |  original_name |
-|-------------------|-----------|-----------|-------|------------|--------------- |
-| Control\_cell\_T0-1 | Control  | T0h   | 0     | cell       | MCF001089_TD01 |
-| Control\_cell\_T0-2 | Control  | T0h   | 0     | cell       | MCF001089_TD02 |
-| Control\_cell\_T0-3 | Control  | T0h   | 0     | cell       |  MCF001089_TD03|
+| original_name | name_to_plot | condition |  timepoint | timenum | short_comp  |   |
+|----------------| -------------|-----------|-----------|-------|------------|--------------- |
+|   MCF001089_TD01 | Control\_cell\_T0-1 | Control  | T0h   | 0     | cell       | MCF001089_TD01 |
+|   MCF001089_TD02 | Control\_cell\_T0-2 | Control  | T0h   | 0     | cell       | MCF001089_TD02 |
+|  MCF001089_TD03 | Control\_cell\_T0-3 | Control  | T0h   | 0     | cell       |  MCF001089_TD03|
 
 You can create it with any spreadsheet program such as Excel or Google Sheets or LibreOfice Calc. At the moment of saving your file you specify that the delimiter must be a comma, see https://support.microsoft.com/en-us/office/save-a-workbook-to-text-format-txt-or-csv-3e9a9d6c-70da-4255-aa28-fcacf1f081e6. 
 
@@ -183,7 +183,7 @@ Column names in metadata must be exactly:
 The column 'original\_name' must have the names of the samples **as given in your data**. 
   
  
- The column 'name\_to\_plot' must have the names as you want them to be (or set identical to original\_name if you prefer). To set  names that are meaningful is a better choice.
+ The column 'name\_to\_plot' must have the names that are meaningful for your experiment. This column is not used by `Tracegroomer.tidy` but it will be used by DIMet, so to go directly to DIMet analysis it is better to have the complete metadata from the start. If your names already satisfy you, you can set identical to original\_name. 
  
  
  The column 'timenum' must contain only the numberic part of the timepoint, for example 2,0, 10, 100  (this means, without letters ("T", "t", "s", "h" etc) nor any other symbol). Make sure these time numbers are in the same units (but do not write  the units here!).
