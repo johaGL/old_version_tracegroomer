@@ -163,11 +163,11 @@ As in example [toyp3](groomexamples/toyp3) if you only have isotopologue Absolut
 
 Here the first lines of the required metadata table, which must be a .csv (comma delimited) file : 
 
-| original_name | name_to_plot | condition |  timepoint | timenum | short_comp  |   |
-|----------------| -------------|-----------|-----------|-------|------------|--------------- |
-|   MCF001089_TD01 | Control\_cell\_T0-1 | Control  | T0h   | 0     | cell       | MCF001089_TD01 |
-|   MCF001089_TD02 | Control\_cell\_T0-2 | Control  | T0h   | 0     | cell       | MCF001089_TD02 |
-|  MCF001089_TD03 | Control\_cell\_T0-3 | Control  | T0h   | 0     | cell       |  MCF001089_TD03|
+| original_name | name_to_plot | condition |  timepoint | timenum | short_comp  | 
+|----------------| -------------|-----------|-----------|-------|------------|
+|   MCF001089_TD01 | Control\_cell\_T0-1 | Control  | T0h   | 0     | cell       | 
+|   MCF001089_TD02 | Control\_cell\_T0-2 | Control  | T0h   | 0     | cell       | 
+|  MCF001089_TD03 | Control\_cell\_T0-3 | Control  | T0h   | 0     | cell       |  
 
 You can create it with any spreadsheet program such as Excel or Google Sheets or LibreOfice Calc. At the moment of saving your file you specify that the delimiter must be a comma, see https://support.microsoft.com/en-us/office/save-a-workbook-to-text-format-txt-or-csv-3e9a9d6c-70da-4255-aa28-fcacf1f081e6. 
 
