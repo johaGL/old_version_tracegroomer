@@ -450,27 +450,6 @@ def save_isos_preview(dic_isos_prop, metadata, output_plots_dir,
                                  outputfigure=outputfigure)
 
 
-def set_samples_names(frames_dic, metadata):
-
-    compartments = metadata['short_comp'].unique().tolist()
-
-    for tab in frames_dic.keys():
-        for co in compartments:
-            metada_co = metadata.loc[metadata['short_comp'] == co, :]
-            df = frames_dic[tab][co]
-            df.reset_index(inplace=True)
-            df.rename(columns={df.columns[0]: "original_name"}, inplace=True)
-            careful_samples_order = pd.merge(df.iloc[:, 0], metada_co[
-                ['name_to_plot', 'original_name']],
-                                             how="left", on="original_name")
-            df = df.assign(name_to_plot=careful_samples_order['name_to_plot'])
-            df = df.set_index('name_to_plot')
-            df = df.drop(columns=['original_name'])
-            frames_dic[tab][co] = df
-
-    return frames_dic
-
-
 def do_vib_prep(meta_path, targetedMetabo_path, args, confidic,
                 amount_mater_path, output_plots_dir):
     # the order of the steps is the one recommended by VIB
@@ -514,7 +493,6 @@ def do_vib_prep(meta_path, targetedMetabo_path, args, confidic,
                       metadata,
                       output_plots_dir, args.isotopologues_preview)
 
-    frames_dic = set_samples_names(frames_dic, metadata)
     return frames_dic
 
 
@@ -712,7 +690,7 @@ def do_isocorOutput_prep(meta_path, targetedMetabo_path, args, confidic,
     save_isos_preview(frames_dic[confidic['name_isotopologue_prop']],
                       metadata,
                       output_plots_dir, args.isotopologues_preview)
-    frames_dic = set_samples_names(frames_dic, metadata)
+
     return frames_dic
 
 
@@ -774,7 +752,7 @@ def do_generic_prep(meta_path, targetedMetabo_path, args, confidic,
     save_isos_preview(frames_dic[confidic_new['name_isotopologue_prop']],
                       metadata,
                       output_plots_dir, args.isotopologues_preview)
-    frames_dic = set_samples_names(frames_dic, metadata)
+
     return frames_dic, confidic_new
 
 
