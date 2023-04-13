@@ -63,7 +63,7 @@ def fullynumeric(mystring):
 
 def open_metadata(file_path):
     try:
-        metadata = pd.read_csv(file_path)
+        metadata = pd.read_csv(file_path, sep='\t')
         return metadata
     except Exception as e:
         print(e)

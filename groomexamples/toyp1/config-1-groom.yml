@@ -12,6 +12,6 @@ name_meanE_or_fracContrib : MeanEnrichment13C
 name_isotopologue_prop : IsotopologuesProp # isotopologue proportions
 name_isotopologue_abs : IsotopologuesAbs  # isotopologue absolute values
 
-out_path : ~/groomexamples/toyp1/data/
+groom_out_path : ~/groomexamples/toyp1/data/
 
 

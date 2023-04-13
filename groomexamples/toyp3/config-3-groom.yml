@@ -12,6 +12,6 @@ name_meanE_or_fracContrib : null
 name_isotopologue_prop : null
 name_isotopologue_abs : isotopologuesCorrValues  # isotopologue absolute values
 
-out_path : ~/groomexamples/toyp3/data/
+groom_out_path : ~/groomexamples/toyp3/data/
 
 

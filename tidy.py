@@ -28,10 +28,6 @@ def prep_args():
     parser.add_argument('--type_of_file', type=str, default=None,
                         help="IsoCor_out_tsv|VIBMEC_xlsx|generic_xlsx")
 
-    parser.add_argument('--amountMaterial_path', type=str, default=None,
-                        help="absolute path to the file .csv having the amount \
-                        of material (number of cells, tissue weight, etc) by sample")
-
     # for abundance
     parser.add_argument("--under_detection_limit_set_nan",
                         action=argparse.BooleanOptionalAction,
@@ -49,6 +45,10 @@ def prep_args():
                         action=argparse.BooleanOptionalAction, default=True,
                         help="On VIB results. From samples' abundances, subtracts  \
                         the average of the blanks.")
+
+    parser.add_argument('--amountMaterial_path', type=str, default=None,
+                        help="absolute path to the file .csv having the amount \
+                           of material (number of cells, tissue weight, etc) by sample")
 
     parser.add_argument("--alternative_div_amount_material",
                         action=argparse.BooleanOptionalAction, default=False,
@@ -275,7 +275,7 @@ def abund_divideby_amount_material(frames_dic: dict, confidic: dict,
     if amount_material is not None:
         try:
             file = amount_material
-            material_df = pd.read_csv(file, index_col=0)
+            material_df = pd.read_csv(file, sep='\t', index_col=0)
 
             assert material_df.shape[1] == 1,\
                 "amountMaterial table must have only 2 columns"
@@ -318,7 +318,7 @@ def isosAbsol_divideby_amount_material(frames_dic: dict, confidic: dict,
     if amount_material is not None:
         try:
             file = amount_material
-            material_df = pd.read_csv(file, index_col=0)
+            material_df = pd.read_csv(file, sep='\t', index_col=0)
 
             assert material_df.shape[1] == 1,\
                 "amountMaterial table must have only 2 columns"
@@ -442,7 +442,7 @@ def save_isos_preview(dic_isos_prop, metadata, output_plots_dir,
             dfmelt = pd.melt(df, id_vars=['metabolite', 'isotopologue_type'])
             dfmelt = fg.givelevels(dfmelt)
             fg.table_minimalbymet(dfmelt,
-                                  f"{output_plots_dir}minextremesIso_{k}.tsv")
+                                  f"{output_plots_dir}minextremesIso_{k}.csv")
             outputfigure = f"{output_plots_dir}allsampleIsos_{k}.pdf"
             figtitle = f"{k} compartment, Isotopologues (proportions) \
             across all samples"
@@ -681,7 +681,7 @@ def do_isocorOutput_prep(meta_path, targetedMetabo_path, args, confidic,
         amount_mater_path,
         args.alternative_div_amount_material)
 
-    # # TODO : think divide or not divide absolute isotopologues
+    # # I tested divide absol isotopols by amount mater => values too small !
     # frames_dic = isosAbsol_divideby_amount_material(
     #     frames_dic, confidic,
     #     amount_mater_path,
@@ -845,12 +845,12 @@ def transfer__abund_nan__to_all_tables(confidic, frames_dic):
 
 
 def perform_type_prep(args, confidic, meta_path, targetedMetabo_path,
-                      amount_mater_path, out_path) -> None:
+                      amount_mater_path, groom_out_path) -> None:
     elems_t_dir = targetedMetabo_path.split("/")[:-1]
     output_plots_dir = "/".join(elems_t_dir) + "/" + "preview_plots/"
     fg.detect_and_create_dir(output_plots_dir)
 
-    fg.detect_and_create_dir(out_path)
+    fg.detect_and_create_dir(groom_out_path)
 
     if args.type_of_file == 'IsoCor_out_tsv':
         frames_dic = do_isocorOutput_prep(meta_path, targetedMetabo_path,
@@ -894,7 +894,7 @@ def perform_type_prep(args, confidic, meta_path, targetedMetabo_path,
         finalk = finalk.reset_index()
         finalk = finalk.drop_duplicates()
         finalk.to_csv(
-            f"{out_path}{k}.tsv",
+            f"{groom_out_path}{k}.csv",
             sep='\t', header=True, index=False)
 
     if len(os.listdir(output_plots_dir)) == 0:
@@ -904,7 +904,7 @@ def perform_type_prep(args, confidic, meta_path, targetedMetabo_path,
     for s in ['name_abundance', 'name_meanE_or_fracContrib',
               'name_isotopologue_prop', 'name_isotopologue_abs']:
         txt += f"{s},{confidic[s]}\n"
-    with open(f"{out_path}TABLESNAMES.csv", "w") as f:
+    with open(f"{groom_out_path}TABLESNAMES.csv", "w") as f:
         f.write(txt)
 
 
@@ -924,11 +924,11 @@ if __name__ == "__main__":
 
     meta_path = os.path.expanduser(confidic['metadata_path'])
     targetedMetabo_path = os.path.expanduser(args.targetedMetabo_path)
-    out_path = os.path.expanduser(confidic['out_path'])
+    groom_out_path = os.path.expanduser(confidic['groom_out_path'])
     amount_mater_path = args.amountMaterial_path
     if args.amountMaterial_path is not None:
         amount_mater_path = os.path.expanduser(
             args.amountMaterial_path)
 
     perform_type_prep(args, confidic, meta_path, targetedMetabo_path,
-                      amount_mater_path, out_path)
+                      amount_mater_path, groom_out_path)

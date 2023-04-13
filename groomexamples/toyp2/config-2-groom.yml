@@ -12,5 +12,5 @@ name_isotopologue_prop : CorrectedIsotopologues # isotopologue proportions
 name_isotopologue_abs : null  # isotopologue absolute values (for toy2 not avail)
 
 
-out_path : ~/groomexamples/toyp2/data/
+groom_out_path : ~/groomexamples/toyp2/data/
 

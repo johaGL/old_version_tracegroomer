@@ -143,7 +143,7 @@ Our pipeline performs, by default:
 - the subtraction of the means of the blanks across all metabolites' abundance for each sample.
 - seting to NaN the values of abundance that are under the limit of detection (LOD).
 - excluding metabolites whose abundance values across all samples are under LOD (excluded then from all tables by default).
-- stomping fractions values to be comprised between 0 and 1 (some negative and some superior to 1 values can occur after correction of naturally occurring isotopologues when using software dedicated to such corrections)
+- stomping fractions values to be comprised between 0 and 1 (some negative and some superior to 1 values can occur after correction of naturally occurring isotopologues by certain software dedicated to such corrections)
 
 You can modify all those options depending on your needs, they appear as 'optional arguments' in the help menu. 
 
@@ -161,7 +161,7 @@ As in example [toyp3](groomexamples/toyp3) if you only have isotopologue Absolut
 
 ## The "Metadata"
 
-Here the first lines of the required metadata table, which must be a .csv (comma delimited) file : 
+Here the first lines of the required metadata table, which must be a .csv (but tab-delimited) file : 
 
 | original_name | name_to_plot | condition |  timepoint | timenum | short_comp  | 
 |----------------| -------------|-----------|-----------|-------|------------|
@@ -169,7 +169,7 @@ Here the first lines of the required metadata table, which must be a .csv (comma
 |   MCF001089_TD02 | Control\_cell\_T0-2 | Control  | T0h   | 0     | cell       | 
 |  MCF001089_TD03 | Control\_cell\_T0-3 | Control  | T0h   | 0     | cell       |  
 
-You can create it with any spreadsheet program such as Excel or Google Sheets or LibreOfice Calc. At the moment of saving your file you specify that the delimiter must be a comma, see https://support.microsoft.com/en-us/office/save-a-workbook-to-text-format-txt-or-csv-3e9a9d6c-70da-4255-aa28-fcacf1f081e6. 
+You can create it with any spreadsheet program such as Excel or Google Sheets or LibreOfice Calc. At the moment of saving your file you specify that the delimiter must be a `tab` ("Tab delimiter" or similar option depending of your context), see https://support.microsoft.com/en-us/office/save-a-workbook-to-text-format-txt-or-csv-3e9a9d6c-70da-4255-aa28-fcacf1f081e6. 
 
 Column names in metadata must be exactly: 
  - original\_name
