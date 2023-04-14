@@ -69,7 +69,7 @@ def prep_args():
                         action=argparse.BooleanOptionalAction, default=False,
                         help="Plot isotopologue values, as given")
 
-    parser.add_argument("--isosprop_min_admitted", default=-0.28, type=float,
+    parser.add_argument("--isosprop_min_admitted", default=-0.5, type=float,
                         help="Metabolites whose isotopologues are less or equal \
                         this cutoff are removed.")
 
@@ -152,21 +152,25 @@ def pull_LOD_blanks_IS(abund_df) -> tuple[pd.Series, pd.DataFrame,
                     i.lower().startswith("mock"))]
     # synonyms: blank, mock
     blanks_df = abund_df.loc[blanks_rows, :]
+    # lod_values = abund_df.loc['LOD', :]
 
-    lod_values = abund_df.loc['LOD', :]
     # refine dfs
     elems_x_todrop = [internal_st_precol[1]]
     elems_x_todrop.extend([i[1] for i in pathways_by_vib])
     elems_x_todrop.extend(list(internal_standards_df.columns))
     elems_y_todrop = ['LOD'] + blanks_rows
-    lod_values = lod_values.loc[~lod_values.index.isin(elems_x_todrop)]
+    # lod_values = lod_values.loc[~lod_values.index.isin(elems_x_todrop)]
     internal_standards_df = internal_standards_df.loc[
         ~internal_standards_df.index.isin(elems_y_todrop)]
-    blanks_df = blanks_df.loc[:, ~blanks_df.columns.isin(elems_y_todrop)]
+    blanks_df = blanks_df.loc[:, ~blanks_df.columns.isin(elems_x_todrop)]
 
     todrop_x_y = {'x': elems_x_todrop,
                   'y': elems_y_todrop}
-    # this x and y just as vib originals (not transposed)
+    # these x and y just as vib originals (not transposed)
+    # * new
+    # re-calculate lod_values (ok equal as in VIB excel, verified)
+    std_blanks = blanks_df.std(axis=0, ddof=1).multiply(3)
+    lod_values = blanks_df.mean() + std_blanks
 
     return lod_values, blanks_df, internal_standards_df, todrop_x_y
 
@@ -238,13 +242,14 @@ def auto_drop_metabolites_uLOD(confidic, frames_dic, metadata, lod_values,
         auto_bad_metabolites[k] = list()
 
     if auto_drop_metabolite_LOD_based:
+        # drop metabolite if all its values are under LOD
         for co in compartments:
             abund_co = frames_dic[confidic['name_abundance']][co]
             abund_coT = abund_co.T
             for i, r in abund_coT.iterrows():
                 nb_nan = abund_coT.loc[i, :].isna().sum()
-                nb_under_LOD = (abund_coT.loc[i, :] <= lod_values[i]).sum()
-                if (nb_under_LOD >= r.size - 1) or (nb_nan >= r.size - 1):
+                nb_under_LOD = (abund_coT.loc[i, :] < lod_values[i]).sum()
+                if (nb_under_LOD == r.size) or (nb_nan == r.size):
                     auto_bad_metabolites[co].append(i)
         frames_dic = drop__metabolites_by_compart(frames_dic,
                                                   auto_bad_metabolites)
@@ -459,6 +464,7 @@ def do_vib_prep(meta_path, targetedMetabo_path, args, confidic,
     abundance_df = frames_dic[confidic['name_abundance']]
     lod_values, blanks_df, internal_standards_df, bad_x_y = pull_LOD_blanks_IS(
         abundance_df)
+
     frames_dic = reshape_frames_dic_elems(frames_dic, metadata, bad_x_y)
 
     frames_dic = abund_under_lod_set_nan(confidic, frames_dic, metadata,
