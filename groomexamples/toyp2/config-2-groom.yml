@@ -4,13 +4,13 @@
 # coments start with #
 # -----------------------------
 
-metadata_path : ~/groomexamples/toyp2/data/metadata_toy2.csv
+metadata : metadata_toy2
 
-name_abundance : rawAbundances
-name_meanE_or_fracContrib : FracContribution_C
-name_isotopologue_prop : CorrectedIsotopologues # isotopologue proportions
-name_isotopologue_abs : null  # isotopologue absolute values (for toy2 not avail)
+abundances : rawAbundances
+mean_enrichment : FracContribution_C
+isotopologue_proportions : CorrectedIsotopologues # isotopologue proportions
+isotopologues : null  # isotopologue absolute values (for toy2 not avail)
 
 
-groom_out_path : ~/groomexamples/toyp2/data/
+groom_out_path : ~/groomexamples/toyp2/raw/
 

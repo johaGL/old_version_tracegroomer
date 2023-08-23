@@ -1,101 +1,276 @@
 # Tracegroomer
 
-Processes **Trace**r metabolomics given file(s), producing the .csv files which are ready for DIMet analysis.
+Tracegroomer is a command line solution for formatting and normalizing **Trace**r metabolomics given file(s), 
+to produce the .csv files which are ready for [DIMet](https://github.com/cbib/DIMet) tool.
 
-
-## Requirements
-
-The requirements are the same as in DIMet https://github.com/cbib/DIMet
-First clone DIMet and create dimet conda environment (see https://github.com/cbib/DIMet), then clone Tracegroomer. Both work with the same conda environment
-```
-conda activate dimet
-```
-
-## Tracegroomer.tidy
-
-Its execution takes only few seconds! Below we explain how to proceed.
-
-### Input files
-
-
-Three types of Tracer data are accepted by our `Tracegroomer.tidy` module:
+Currently, three **types** of Tracer (or Isotope-labeled) metabolomics measurements files are accepted by `Tracegroomer.tidy` script:
 
 1. IsoCor results (.tsv measurments file).
 2. Results provided by the VIB Metabolomics Expertise Center (El-Maven results are shaped by VIB MEC team into a multi-sheet .xlsx file).  
-3. A 'generic' .xlsx measurments file.
+3. A 'generic' .xlsx measurements file.
+
+For any type of these supported inputs, Tracegroomer generates an independent file for:
+i) total metabolite abundances ii) Isotopologues iii) Isotopologues' proportions and iv) mean enrichment (a.k.a fractional contributions).
+
+Automatic formatting is performed, as well as the normalization chosen by the user:
+whether by the amount of material and/or by an internal standard.
+Useful advanced options are offered (e.g. if the user has only Isotopologues' absolute values, Tracegroomer can generate all the other 
+measurements files automatically).
 
 
-Your data is expected to correspond to one of the three types above. We provide you "toy groom examples" of each one of them  [here](groomexamples/). Pick the example most suited to your data:
+_Note_ : this script does not correct for naturally occurring isotopologues. 
+Your data must be already processed by another software that performs such correction.
+
+--------------------------
+
+## Requirements
+
+Clone this repository, make sure you have activated your virtual environment 
+(`source MY_VIRTUAL_ENV/bin/activate`), locate yourself inside your local clone (`cd Tracegroomer`) and install dependencies via pip:
+```
+pip install -r requirements.txt
+```
+
+<details>
+<summary>Alternatively, use a conda environment <sup><sub>click to show/hide</sub></sup>
+</summary>
+
+Locate yourself in `Tracegroomer/tools`, then run:
+
+```
+conda env create -f tracegroomer.yml
+```
+And  activate the created environment:
+```
+conda activate Tracegroomer
+```
+
+</details>
+
+## How to use Tracegroomer
+
+Its execution takes only few seconds. Below we explain how to proceed.
+
+
+### Input files
+
+**Compulsory files:**
+
+- the measurements file (tsv, csv -tab delimited-, or xlsx)
+  <details>
+  <summary>
+  Description
+  </summary>
+  
+  The measurements file is given by a Metabolomics facility. 
+  It is the result of the correction by software such as IsoCor, El-Maven, etc. 
+  Some times the file can be further formatted in the Metabolomics facility, before
+  being delivered to the end user, which is the case of VIB MEC delivered files. 
+
+  If the delivered file does not correspond to the IsoCor direct output, 
+  nor the VIB MEC formatting, the user must adapt it to fit in the type "generic" .xlsx format:   
+  it must **NOT** contain: formulas, symbols accompanying the numbers, special characters.
+
+  The user will find [here](#running-a-test-with-the-provided-examples) how to get examples.
+  
+  </details>
+
+- the **metadata** file, which describes the experimental setup. 
+
+  <details>
+  <summary>
+  Description and example
+  </summary>
+   
+   The metadata is a tab delimited .csv file provided by the user,
+   which has to contain 6 columns named 
+<code>name_to_plot</code>, <code>timepoint</code>, 
+<code>timenum</code>, <code>condition</code>, 
+<code>compartment</code>, <code>original_name</code>. 
+
+   Here is the semantics of the columns:
+   
+   - <code>name_to_plot</code> is the string that will appear on the figures produced by DIMet
+   - <code>condition</code> is the experimental condition
+   - <code>timepoint</code> is the sampling time as it is defined in your experimental setup
+     (it is an arbitary string that can contain non numerical characters)
+   - <code>timenum</code> is the numerical encoding of the <code>timepoint</code>
+   - <code>compartment</code> is the name of the cellular compartment for which the measuring
+     has been done (e.g. "endo", "endocellular", "cyto", etc)
+   - <code>original_name</code> contains the column names that are provided in the quantification files
+   
+   _Example_:
+   
+   | name_to_plot | condition | timepoint | timenum | compartment | original_name |
+   |--------------|-----------|-----------|---------|-------------|---------------|
+   | Cond1 T0     | cond1     | T0        | 0       | comp_name   | T0_cond_1     |
+   | Cond1 T24    | cond1     | T24       | 24      | comp_name   | T24_cond_1    |
+   | Cond2 T0     | cond2     | T0        | 0       | comp_name   | T0_cond_2     |
+   | Cond3 T24    | cond2     | T24       | 24      | comp_name   | T24_cond_2    |
+
+   The column `name_to_plot` is not used by `Tracegroomer.tidy` 
+      but it will be used by DIMet, so it is practical to set it from the start.
+
+     _Note_: You can create this file with any spreadsheet program such as Excel or Google Sheets or LibreOfice Calc. At the moment of saving your file you specify that the delimiter must be a `tab` ("Tab delimiter" or similar option depending of your context), see https://support.microsoft.com/en-us/office/save-a-workbook-to-text-format-txt-or-csv-3e9a9d6c-70da-4255-aa28-fcacf1f081e6. 
+
+  </details>
+
+
+- the basic configuration file (extension .yml)
+
+  <details>
+  <summary>
+  Description and example
+  </summary>
+  This file contains basic needed information: the name of the metadata file,
+  the names (but not the paths) of the output files, and the absolute path to the output folder.
+  
+  The comments (`#`) serve as guide. The user must fill after the colon of each field: 
+  
+   ```
+   # coments start with #
+   # -----------------------------
+   
+   metadata: metadata_toy3   # only file name, no extension
+   
+   # names of the sheets in xlsx file that exist (null otherwise) 
+   abundances : null  # total abundance
+   mean_enrichment : null  # mean enrichment
+   isotopologue_proportions : null  # isotopologue proportions
+   isotopologues : isotopologuesCorrValues  # isotopologue absolute values
+   
+   groom_out_path : ~/groomexamples/toyp3/raw/  # absolute path to folder
+   ```  
+   
+   When a `name_...` field is `null`, it will be generated and named automatically (when possible from existing quantifications).
+
+   The user will find [here](#running-a-test-with-the-provided-examples) how to get examples.
+
+
+   _Note_: There exist online editors for .yml files, such as https://yamlchecker.com/, just copy-paste and edit!
+
+  
+  </details>
+
+
+**Facultative files**
+
+   * the amount of material by sample (tab delimited csv file)
+   * a file with metabolites to exclude (tab delimited csv file)
+
+The facultative files are used through the command line, which is explained
+in [Advanced options](#advanced-options)
+
+You must organize your files as follows:
+```
+MY_WORKING_FOLDER
+└── my_project
+	└── my_dataset_name
+	     ├── config_groom.yml  # <- my basic configuration in .yml file
+	     ├── raw
+	     │   └── metadata_toy1.csv  # <- my metadata, inside the 'raw' folder 
+	     ├── ... # the csv files for normalizations, etc (optional)
+	     └── TRACER_IsoCor_out_example.tsv  # <- my measurements file
+```
+
+The generic command line is:
+
+```
+python3 -m Tracegroomer.tidy --targetedMetabo_path $MEASUREMENTS \
+    --type_of_file $MY_TYPE_OF_INPUT \
+    $MY_BASIC_CONFIG
+```
+Where :
+- `MEASUREMENTS` is the file that contains the measurements, in absolute path.
+- `MY_TYPE_OF_INPUT` corresponds to one of: `IsoCor_out_tsv`, `VIBMEC_xlsx`, `generic_xlsx`
+
+We recommend to run a test with the provided examples if this is the
+first time you use Tracegroomer.tidy. Then re-use  the 
+organization and the configurations, and modify the command line to be suitable to your data.
+
+-------------------------------------
+
+### Running a test with the provided examples
+
+To perform a test using the examples we provide, place
+the folder `groomexamples` **completely outside** of the Tracegroomer folder, obtaining a structure a like this:
+
+```
+MY_WORKING_FOLDER
+├── groomexamples
+|	├──toyp1
+|	│   ├── config-1-groom.yml  # the configuration for the 1st example
+|	│   ├── raw
+|	│   │   └── metadata_toy1.csv
+|	│   └── TRACER_IsoCor_out_example.tsv
+|	├── toyp2
+|	│   ├── config-2-groom.yml   # the configuration for the 2nd example
+|	│   ├── raw
+|	│   │   └── metadata_toy2.csv
+|	│   ├── ... # the csv files for normalizations, etc
+|	│   └── TRACER_metabo_toy2.xlsx
+|	└── toyp3
+|		├── ...
+│  
+└── Tracegroomer
+    ├── ...
+
+```
+
+Pick the example most suited to your data:
 
 1. 'toyp1' : IsoCor output (tsv file)
 2. 'toyp2' : VIB MEC xlsx file
 3. 'toyp3' : a generic type of xlsx file
 
-Each of these example folders contains:
 
- - Compulsory files:
-     * the tracer metabolome file (tsv, csv -tab delimited-, or xlsx)
-     * your configuration file (extension .yml), see below.
-
- - 'data/' folder, with the **metadata** file. This file provides the samples description. This is compulsory. See "metadata" section below. 
- 
- - Facultative files:
-   * the amount of material by sample (csv file)
-   * a file with metabolites to exclude (csv file)
-    
-    
-For example, in [toyp2](groomexamples/toyp2/), the tracer metabolome file is a xlsx file.     
-It depends on the platform/software used before us.
-
-Regarding the **metadata**, we explain it in detail in the section [Metadata](#the-metadata).
+### Run `Tracegroomer.tidy` 
 
 
-Regarding the .yml file, you can use as template the ones we provide in the groomexamples, such  [this config.yml template](groomexamples/toyp1/config-1-groom.yml). To double-check your modifications there exist online editors, such as https://yamlchecker.com/, just copy-paste and edit!
-
-Note that this pipeline does not correct for naturally ocurring isotopologues. Your data must be already processed by another software that performs such correction.
-
-
-### Execute `Tracegroomer.tidy` 
-
-The groomexamples serve also to demonstrate how fast this module can be. To run all the examples at once, copy-paste the 'groomexamples' folder in your $HOME, then run:
-
+locate yourself in `MY_WORKING_FOLDER`, then run:
+For IsoCor case:
 ```
-cd $HOME
-
 python3 -m Tracegroomer.tidy \
    --targetedMetabo_path groomexamples/toyp1/TRACER_IsoCor_out_example.tsv \
    --type_of_file IsoCor_out_tsv \
    groomexamples/toyp1/config-1-groom.yml
+```
 
+or, for VIB MEC case:
 
+```
 python3 -m Tracegroomer.tidy \
    --targetedMetabo_path groomexamples/toyp2/TRACER_metabo_toy2.xlsx \
    --type_of_file VIBMEC_xlsx \
    --amountMaterial_path groomexamples/toyp2/nbcells-or-amountOfMaterial.csv \
    groomexamples/toyp2/config-2-groom.yml
+```
 
+or, for generic case:
 
+```
 python3 -m Tracegroomer.tidy \
    --targetedMetabo_path groomexamples/toyp3/TRACER_generic_toy3.xlsx \
    --type_of_file generic_xlsx \
    groomexamples/toyp3/config-3-groom.yml
 ```
+_Note_ : if the working folder is not the 'home' directory, modify accordingly the absolute paths in the .yml files and in the bash commands.
 
 
 
 ## The output
 
-The four output tables (three if absolute isotopologues are not provided) are saved in the  folder that  you specified in the config .yml file ("out_path" field). 
-
-The examples we provide here use the `data/` folder (inside each given "toyp*" directory) as the output location. In this way we simply copy the entire `data/` folder to the tracer metabolomics project we want to run with DIMet !
+The output files are saved in the  folder that  you specified in the config `.yml` file ("out_path" field). 
+A total of 4 output files are generated if the absolute isotopologues are provided, otherwise 3 files are generated.
+The examples we provide here use the `raw/` folder (inside each given "toyp*" directory) as the output location. 
+In this way we simply copy the entire `raw/` content to the folder structure that we want to run with  [DIMet](https://github.com/cbib/DIMet) !
 
 The format of these output files is tab-delimited .csv.
 
 
 --------------------
-## Details about Tracegroomer.tidy
 
-### Advanced Tracegroomer.tidy options
+## Advanced options
 
 We provide advanced options for `Tracegroomer.tidy` module, check the help:
 ```
@@ -158,35 +333,3 @@ As in example [toyp3](groomexamples/toyp3) if you only have isotopologue Absolut
 
 
 
-
-## The "Metadata"
-
-Here the first lines of the required metadata table, which must be a .csv (but tab-delimited) file : 
-
-| original_name | name_to_plot | condition |  timepoint | timenum | short_comp  | 
-|----------------| -------------|-----------|-----------|-------|------------|
-|   MCF001089_TD01 | Control\_cell\_T0-1 | Control  | T0h   | 0     | cell       | 
-|   MCF001089_TD02 | Control\_cell\_T0-2 | Control  | T0h   | 0     | cell       | 
-|  MCF001089_TD03 | Control\_cell\_T0-3 | Control  | T0h   | 0     | cell       |  
-
-You can create it with any spreadsheet program such as Excel or Google Sheets or LibreOfice Calc. At the moment of saving your file you specify that the delimiter must be a `tab` ("Tab delimiter" or similar option depending of your context), see https://support.microsoft.com/en-us/office/save-a-workbook-to-text-format-txt-or-csv-3e9a9d6c-70da-4255-aa28-fcacf1f081e6. 
-
-Column names in metadata must be exactly: 
- - original\_name
- - name\_to\_plot
- - timepoint
- - timenum
- - condition
- - short\_comp
-
- 
-The column 'original\_name' must have the names of the samples **as given in your data**. 
-  
- 
- The column 'name\_to\_plot' must have the names that are meaningful for your experiment. This column is not used by `Tracegroomer.tidy` but it will be used by DIMet, so to go directly to DIMet analysis it is better to have the complete metadata from the start. If your names already satisfy you, you can set identical to original\_name. 
- 
- 
- The column 'timenum' must contain only the numberic part of the timepoint, for example 2,0, 10, 100  (this means, without letters ("T", "t", "s", "h" etc) nor any other symbol). Make sure these time numbers are in the same units (but do not write  the units here!).
-  
-
-The column 'short\_comp' is an abbreviation, coined by you, for the compartments. This will be used for the results' files names: the longer the compartments names are, the longer the output files' names! Please pick short and clear abbreviations to fill this column.

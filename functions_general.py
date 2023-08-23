@@ -33,18 +33,6 @@ def open_config_file(confifile):
     return confidic
 
 
-def auto_check_validity_configuration_file(confidic) -> None:
-    expected_keys = ['metadata_path',
-                     'name_abundance',
-                     'name_meanE_or_fracContrib',
-                     'name_isotopologue_prop',
-                     'name_isotopologue_abs',
-                     'conditions',
-                     'suffix', 'out_path']
-    for k in expected_keys:
-        assert k in confidic.keys(), f"{k} : missing in configuration file! "
-
-
 def detect_and_create_dir(namenesteddir):
     if not os.path.exists(namenesteddir):
         os.makedirs(namenesteddir)

@@ -4,14 +4,14 @@
 # coments start with #
 # -----------------------------
 
-metadata_path : ~/groomexamples/toyp1/data/metadata_toy1.csv 
+metadata : metadata_toy1
 
 # For this IsoCor type of input, just write the desired tables names:
-name_abundance : AbundanceCorrected
-name_meanE_or_fracContrib : MeanEnrichment13C
-name_isotopologue_prop : IsotopologuesProp # isotopologue proportions
-name_isotopologue_abs : IsotopologuesAbs  # isotopologue absolute values
+abundances : AbundanceCorrected
+mean_enrichment : MeanEnrichment13C
+isotopologue_proportions : IsotopologuesProp # isotopologue proportions
+isotopologues : IsotopologuesAbs  # isotopologue absolute values
 
-groom_out_path : ~/groomexamples/toyp1/data/
+groom_out_path : ~/groomexamples/toyp1/raw/    # absolute path
 
 

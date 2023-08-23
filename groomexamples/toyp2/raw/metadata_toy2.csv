@@ -1,4 +1,4 @@
-"name_to_plot"	"condition"	"timepoint"	"timenum"	"short_comp"	"original_name"
+"name_to_plot"	"condition"	"timepoint"	"timenum"	"compartment"	"original_name"
 "Cont_c_T0-1"	"Control"	"T0"	0	"cell"	"MCF001089_TD01"
 "Cont_c_T0-2"	"Control"	"T0"	0	"cell"	"MCF001089_TD02"
 "Cont_c_T2h-1"	"Control"	"T2h"	2	"cell"	"MCF001089_TD07"
