@@ -1,6 +1,6 @@
 # Tracegroomer
 
-Tracegroomer is a command line solution for formatting and normalizing **Trace**r metabolomics given file(s), 
+Tracegroomer is a command line solution for formatting and normalising **Trace**r metabolomics given file(s), 
 to produce the .csv files which are ready for [DIMet](https://github.com/cbib/DIMet) tool.
 
 Currently, three **types** of Tracer (or Isotope-labeled) metabolomics measurements files are accepted by `Tracegroomer.tidy` script:
