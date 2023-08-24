@@ -65,14 +65,13 @@ Its execution takes only few seconds. Below we explain how to proceed.
   The measurements file is given by a Metabolomics facility. 
   It is the result of the correction by software such as IsoCor, El-Maven, etc. 
   Some times the file can be further formatted in the Metabolomics facility, before
-  being delivered to the end user, which is the case of VIB MEC delivered files. 
-
-  If the delivered file does not correspond to the IsoCor direct output, 
-  nor the VIB MEC formatting, the user must adapt it to fit in the type "generic" .xlsx format:   
-  it must **NOT** contain: formulas, symbols accompanying the numbers, special characters.
-
-  The user will find [here](#running-a-test-with-the-provided-examples) how to get examples.
+  being delivered to the end user, which is the case of VIB MEC delivered files.
+     
+  Tracegroomer also accepts a "generic" format:  
+     - it must **NOT** contain: formulas, symbols accompanying the numeric values, nor special characters. 
+     - the header (first row) is the only part that can contain non numeric values.
   
+   The user will find [here](#running-a-test-with-the-provided-examples) how get examples of IsoCor direct output, VIB MEC file, and generic file.
   </details>
 
 - the **metadata** file, which describes the experimental setup. 
@@ -142,7 +141,9 @@ Its execution takes only few seconds. Below we explain how to proceed.
    groom_out_path : ~/groomexamples/toyp3/raw/  # absolute path to folder
    ```  
    
-   When a `name_...` field is `null`, it will be generated and named automatically (when possible from existing quantifications).
+   When the fields `abundances`, `mean_enrichment`, and/or `isotopologue_proportions` are set `null`
+  (as shown in the example above), 
+  the respective output file will be automatically generated (when possible from existing quantifications).
 
    The user will find [here](#running-a-test-with-the-provided-examples) how to get examples.
 
