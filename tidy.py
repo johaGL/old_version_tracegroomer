@@ -548,6 +548,7 @@ def compute_isotopologues_proportions_from_absolute(df, metabos_isos_df):
 
 def compute_MEorFC_from_isotopologues_proportions(df, metabos_isos_df):
     """
+    computes mean enrichment (a.k.a fractional contributions)
     input:
       df : isotopologue proportions (whether computed here, or from input)
       metabos_isos_df : df created internally (see 'isotopologues_meaning_df')
