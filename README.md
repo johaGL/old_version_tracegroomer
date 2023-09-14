@@ -340,5 +340,5 @@ We have created this option for those formats that are not the other two scenari
 
 As in example [toyp3](groomexamples/toyp3) if you only have isotopologue Absolute values, but not the other tables: put them as a single named sheet in your .xlsx file, and we automatically generate all the other types of tables for you ! 
 
-
+Note: the sheets corresponding to isotopologues measurements must be named with a name containing the string "isotopol". The names of the sheets must be unambiguous.
 

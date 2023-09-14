@@ -79,6 +79,18 @@ def verify_metadata_sample_not_duplicated(metadata_df) -> None:
 
 
 def isotopologues_meaning_df(isotopologues_full_list):
+    """
+    input: list of isotopologues ['cit_m+0', 'cit_m+1', ...]
+       note: extracted from the colnames of the input isotopologues (auto-detected any table of isotopologues)
+    output: a dataframe in this style:
+        metabolite   m+x    isotopologue_name
+        cit          m+0    cit_m+0
+        cit          m+1    cit_m+1
+        ...
+        cit          m+6    cit_m+6
+        PEP          m+0    PEP_m+0
+        ...
+    """
     xu = {"metabolite": [], "m+x": [], "isotopologue_name": []}
     for ch in isotopologues_full_list:
         elems = ch.split("_m+")

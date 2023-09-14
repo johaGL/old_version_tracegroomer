@@ -503,6 +503,13 @@ def do_vib_prep(meta_path, targetedMetabo_path, args, confidic,
 
 
 def compute_abund_from_absolute_isotopol(df, metabos_isos_df):
+    """
+    input:
+       df : input isotopologues in absolute values
+       metabos_isos_df : df created internally (see 'isotopologues_meaning_df')
+    output:
+       transposed dataframe (samples as columns) of total abundances
+    """
     df = df.T
     metabos_uniq = metabos_isos_df['metabolite'].unique()
     abundance = pd.DataFrame(index=metabos_uniq, columns=df.columns)
@@ -518,6 +525,13 @@ def compute_abund_from_absolute_isotopol(df, metabos_isos_df):
 
 
 def compute_isotopologues_proportions_from_absolute(df, metabos_isos_df):
+    """
+    input:
+       df : input isotopologues in absolute values
+       metabos_isos_df : df created internally (see 'isotopologues_meaning_df')
+    output:
+       transposed dataframe (samples as columns) of isotopologue proportions
+    """
     df = df.T
     metabos_uniq = metabos_isos_df['metabolite'].unique()
     isos_prop = pd.DataFrame(index=df.index, columns=df.columns)
@@ -533,20 +547,39 @@ def compute_isotopologues_proportions_from_absolute(df, metabos_isos_df):
 
 
 def compute_MEorFC_from_isotopologues_proportions(df, metabos_isos_df):
+    """
+    input:
+      df : isotopologue proportions (whether computed here, or from input)
+      metabos_isos_df : df created internally (see 'isotopologues_meaning_df')
+    output:
+      transposed dataframe (samples as columns) of mean enrichment
+    note:
+       mean enrichment (i) = ( (i_m+0 * 0) + (i_m+1 * 1) +...+ (i_m+n * n)  ) / n
+          where:
+           i is one metabolite,
+           n the max nb of carbons that can be marked for that metabolite,
+           each i_m+x is a value comprised between 0 and 1.
+    """
     isos_prop = df.T
     metabos_uniq = metabos_isos_df['metabolite'].unique()
+    # empty df
     meanenrich_or_fraccontrib = pd.DataFrame(index=metabos_uniq,
                                              columns=isos_prop.columns)
     for m in metabos_uniq:
         isos_here = metabos_isos_df.loc[
             metabos_isos_df['metabolite'] == m, 'isotopologue_name']
-        coefs = [int(i.split("_m+")[1]) for i in isos_here.tolist()]
+        coefs = [int(i.split("_m+")[1]) for i in isos_here.tolist()] # 0, 1, 2, etc
         sub_df = isos_prop.loc[isos_here, :]
         sub_df['coefs'] = coefs
+        # compute the factors, produce another pandas df coefs_fracs_prod
         coefs_fracs_prod = sub_df.multiply(sub_df['coefs'], axis=0)
+        # line above makes coefs column be multiplied by itself, TODO: fix this, for now just dropping the coefs col
+        # get rid of the coefs column:
         coefs_fracs_prod.drop(columns=['coefs'], inplace=True)
-        numerators = coefs_fracs_prod.sum(axis=0, skipna=False)
-        me_fc_this_metabolite = numerators / max(coefs)
+        # sum the factors
+        numerator_val = coefs_fracs_prod.sum(axis=0, skipna=False)
+        # divide by n, place that scalar in the empty df
+        me_fc_this_metabolite = numerator_val / max(coefs)
         me_fc_this_metabolite.name = m
         meanenrich_or_fraccontrib.loc[m, :] = me_fc_this_metabolite
     meanenrich_or_fraccontrib = meanenrich_or_fraccontrib.round(decimals=9)
@@ -906,7 +939,6 @@ def perform_type_prep(args, confidic, meta_path, targetedMetabo_path,
 
     if len(os.listdir(output_plots_dir)) == 0:
         os.removedirs(output_plots_dir)
-
 
 
 if __name__ == "__main__":
