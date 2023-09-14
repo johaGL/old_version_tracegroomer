@@ -897,7 +897,7 @@ def perform_type_prep(args, confidic, meta_path, targetedMetabo_path,
             finalk = pd.merge(finalk, tmpli[i], how='outer',
                               left_index=True, right_index=True)
         # note : do not clear zero rows, as gives problem pd.merge
-        finalk.index.name = "metabolite_or_isotopologue"
+        finalk.index.name = "ID"
         finalk = finalk.reset_index()
         finalk = finalk.drop_duplicates()
         finalk.to_csv(
