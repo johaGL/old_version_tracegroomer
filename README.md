@@ -70,8 +70,14 @@ Its execution takes only few seconds. Below we explain how to proceed.
   Tracegroomer also accepts a "generic" format:  
      - it must **NOT** contain: formulas, symbols accompanying the numeric values, nor special characters. 
      - the header (first row) is the only part that can contain non numeric values.
+  <p>
+	  
+  </p>
   
    The user will find [here](#running-a-test-with-the-provided-examples) how get examples of IsoCor direct output, VIB MEC file, and generic file.
+  We provide also more details in the sections [users having VIB results as input](#users-having-vib-results), [users having IsoCor results](#users-having-isocor-results) and  ['generic' type of data](#users-having-generic-data).
+
+
   </details>
 
 - the **metadata** file, which describes the experimental setup. 
@@ -273,7 +279,7 @@ The format of these output files is tab-delimited .csv.
 
 ## Advanced options
 
-We provide advanced options for `Tracegroomer.tidy` module, check the help:
+We provide advanced options for `Tracegroomer.tidy` script, check the help:
 ```
 python -m Tracegroomer.tidy --help
 ```
@@ -291,31 +297,33 @@ However we have some indications that can slightly differ for [users having VIB 
  
 ### Users having IsoCor results
 
+Before explaining the advanced options for this kind of data, a short explanation about what Tracegroomer performs automatically as basic formatting:
+
 A typical IsoCor results table is described in: https://isocor.readthedocs.io/en/latest/tutorials.html#output-files
+ It consists of a .tsv file which has in columns the sample, metabolite, isotopologue and all quantifications, and the rows are in piled version (the samples are repeated vertically).
  
- Our pipeline transforms its columns into tables, so here the 'Isocor column : DIMet table' correspondences:
- 
-- corrected_area : isotopologuesAbsolute  
-- isotopologue_fraction : isotopologuesProportions
-- mean\_enrichment :  meanEnrich\_or_fracContrib
-- (nothing)   : Abundance 
+ Our script transforms specific columns of that file into tables. As the total metabolite abundance column is not present in the input data, the total abundance per metabolite is the automatic result of the sum, per metabolite, of Isotopologues' absolute values (see `AbundanceCorrected` below). So here the correspondances:
 
-Abundance table is the sum (per metabolite) of IsotopologuesAbsolute, we also perform it automatically, as this column is not present in the input data.     
-    
-Please stick to the example [toyp1](groomexamples/toyp1) for the names of the tables in the **.yml** file for isocorOutput
-    
+|column in the IsoCor file  | Tracegroomer output filename |
+|--------|-------|
+|corrected_area |IsotopologuesAbsolute |
+|isotopologue_fraction | IsotopologuesProportions|
+| mean_enrichment| MeanEnrichment|
+|- | AbundanceCorrected |
+ 
+We provide the example [toyp1](groomexamples/toyp1).     
         
-Options regarding to detection limit (LOD) and blanks will not have any effect on the IsoCor type of data: LOD is not provided in the data, and the same is true for blanks. 
+Advanced options regarding to detection limit (LOD) and blanks will not have any effect on the IsoCor type of data: LOD is not provided in the data, and the same is true for blanks. 
 
-All the other options do have effect: those related to internal standard, amount of material, and isotopologues.
+All the other advanced options do have effect: those related to internal standard, amount of material, and isotopologues.
  
  
  
 ### Users having VIB results
 
-As shown in the example [toyp2](groomexamples/toyp2/), give the names of the sheets that are present in your excel file coherently. 
+As shown in the example [toyp2](groomexamples/toyp2/), give the names of the sheets that are present in your excel file coherently in the .yml file. 
  
-Our pipeline performs, by default:
+Our script performs, by default:
 - the subtraction of the means of the blanks across all metabolites' abundance for each sample.
 - seting to NaN the values of abundance that are under the limit of detection (LOD).
 - excluding metabolites whose abundance values across all samples are under LOD (excluded then from all tables by default).
