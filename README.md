@@ -346,4 +346,10 @@ _Notes_:
 - sheets corresponding to abundance and mean enrichment  (when available) must have metabolites as columns and samples as rows.
 - the sheets corresponding to isotopologues measurements must be named with a name containing the string "isotopol". The names of the sheets must be unambiguous.
 
+Possible advanced options:
 
+- normalize by the amount of material (number of cells, tissue weight): setting the path to the file in `--amountMaterial_path` option. The file must be like [this csv file](groomexamples/toyp2/nbcells-or-amountOfMaterial.csv), and the first column must contain the same names as in metadata 'original\_name'.
+- normalize by an internal standard (present in your data) at choice: using the advanced option `--use_internal_standard`.
+- remove metabolites 
+- print a preview of isotopologues values
+  
