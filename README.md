@@ -67,10 +67,7 @@ Its execution takes only few seconds. Below we explain how to proceed.
   Some times the file can be further formatted in the Metabolomics facility, before
   being delivered to the end user, which is the case of VIB MEC delivered files.
      
-  Tracegroomer also accepts a "generic" format:  
-     - it must **NOT** contain: formulas, symbols accompanying the numeric values, nor special characters. 
-     - the header (first row, with the samples), and the first column (named 'ID') can contain non numeric values.
-     - the isotopologues names, in the first column, must follow the convention `metaboliteID_m+x`: the substring `_m+` is compulsory and is located between the metabolite name (or identifier) and the number of marked carbon atoms
+  Tracegroomer also accepts a "generic" format, see more details in ['generic' type of data](#users-having-generic-data).
   <p>
 	  
   </p>
@@ -336,10 +333,17 @@ You can modify all those options depending on your needs, they appear as 'option
 ### Users having generic data
 
 We have created this option for those formats that are not the other two scenarios, so your data is expectd to be in the form of a .xlsx file with sheets similar as in the provided 'toyp3'  :
-- sheets corresponding to isotopologue Proportions (when available) and isotopologue Absolute values must have isotopologues as columns and samples as rows.
-- sheets corresponding to abundance and mean enrichment  must have metabolites as columns and samples as rows.
 
-As in example [toyp3](groomexamples/toyp3) if you only have isotopologue Absolute values, but not the other tables: put them as a single named sheet in your .xlsx file, and we automatically generate all the other types of tables for you ! 
+- this .xlsx file must **NOT** contain: formulas, symbols accompanying the numeric values, nor special characters.
+- each sheet must correspond to one type of quantification, see _Notes_ below.
+- the header (first row, with the molecules IDs), and the first column (with the samples) can contain non numeric values.
+- the isotopologues names, in the header, must follow the convention `metaboliteID_labelX`: the substring `_label` is compulsory and is located between the metabolite name (or identifier) `metaboliteID` and the number of marked carbon atoms `X` (e.g. `glucose6phosphate_label0`).
 
-Note: the sheets corresponding to isotopologues measurements must be named with a name containing the string "isotopol". The names of the sheets must be unambiguous.
+As in example [toyp3](groomexamples/toyp3) if you only have Isotopologue Absolute values, but not the other tables: put them as a single named sheet in your .xlsx file, and we automatically generate all the other types of tables for you ! 
+
+_Notes_: 
+- sheets corresponding to isotopologue Proportions (when available) and isotopologue Absolute values (compulsory if the proportions not available) must have isotopologues as columns and samples as rows.
+- sheets corresponding to abundance and mean enrichment  (when available) must have metabolites as columns and samples as rows.
+- the sheets corresponding to isotopologues measurements must be named with a name containing the string "isotopol". The names of the sheets must be unambiguous.
+
 
