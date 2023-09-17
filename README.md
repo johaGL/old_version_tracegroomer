@@ -70,6 +70,7 @@ Its execution takes only few seconds. Below we explain how to proceed.
   Tracegroomer also accepts a "generic" format:  
      - it must **NOT** contain: formulas, symbols accompanying the numeric values, nor special characters. 
      - the header (first row) is the only part that can contain non numeric values.
+     - the isotopologues names must follow the convention `metaboliteID_m+x`: the substring `_m+` is compulsory and is located between the metabolite name (or identifier) and the number of marked carbon atoms
   <p>
 	  
   </p>
