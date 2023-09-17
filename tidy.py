@@ -16,7 +16,7 @@ import functions_general as fg
 
 def prep_args():
     show_defaults = argparse.ArgumentDefaultsHelpFormatter
-    parser = argparse.ArgumentParser(prog="python -m DIMet.src.prepare",
+    parser = argparse.ArgumentParser(prog="python -m Tracegroomer.tidy",
                                      formatter_class=show_defaults)
 
     parser.add_argument('config', type=str,
